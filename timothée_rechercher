@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+int main(void) {
+    FILE *f = fopen("foret_arbres_50_V1.csv", "r");      // ouverture du fichier css situer dans le même dossier que l'exécutable
+    if (!f) {
+        perror("Erreur ouverture fichier");     //si on arrive pas a ouvrire le fichier
+        return 1;
+    }
+
+    char line[256];         // capacité de lecture de caractère par ligne
+    char copy_line[256];    // copi de line pour avoir la ligne intacte
+
+    int colonne_espece = -1;  // position de la colonne Espece
+    int ligne_num = 0;        // compteur de lignes
+
+    while (fgets(line, sizeof(line), f)) {  // lie le fichier f ligne par ligne; 
+        //boucle : fgets lit une ligne entière du fichier f dans la mémoire line, elle lit jusqu’au prochain saut de ligne (\n) ou jusqu’à 
+        //ce que line soit pleine (ici 256 caractères max). La boucle while continue tant qu’il y a des lignes à lire. 
+
+        int colonne = 0;                  // compteur pour les colonnes de cette ligne
+        strcpy (copy_line, line);         // on créer une copy de line car il vas être fragmentée 
+        char *token = strtok(line, ";");      // premier token
+
+        while (token != NULL) {
+            if (ligne_num == 0) { // première ligne = en-têtes
+                if (strcmp(token, "Espece") == 0) {     //regarde ci le token et égal a Espece en considérent les majuscule
+                    colonne_espece = colonne; // mémoriser la position
+                }
+            } else { // autres lignes = données
+                if (colonne == colonne_espece) {
+                    if (strcmp(token, "Chene") == 0){
+                        printf("%s",copy_line);             // copie la ligne si on a dans la colone Espece, Chene
+                    }
+                }
+            }
+            colonne++;                  // on ajoute 1 a notre compteur de colone
+            token = strtok(NULL, ";"); // passer au token suivant
+        }
+        ligne_num++; // passer à la ligne suivante
+    }
+
+    fclose(f);
+    return 0;
+}
