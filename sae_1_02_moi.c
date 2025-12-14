@@ -28,7 +28,10 @@ int ram(struct Arbre arbres[]) {
     while (fgets(line, sizeof(line), f)) {      // Boucle pour lire le fichier ligne par ligne
         line[strcspn(line, "\n")] = '\0';  // retirer le caractère '\n' à la fin de la ligne
 
-
+        if (nb_arbres == 0) {   // première ligne = en-têtes
+            nb_arbres++;
+            continue;           // on ignore cette ligne pour les calculs
+        }
         char *token = strtok(line, ";");    // découper la ligne en tokens (séparés par ';')
         struct Arbre a;                     // créer une variable temporaire pour stocker l'arbre
         int colonne = 0;                     // compteur de colonne pour savoir quel champ on lit
@@ -57,10 +60,19 @@ int ram(struct Arbre arbres[]) {
     return nb_arbres;           // retourner le nombre d'arbres chargés
 }
 
+void afficher_entete() {
+    printf("| %-12s | %-12s | %-3s | %-10s | %-12s | %-11s | %-10s |\n",
+           "Identifiant", "Espece", "Age",
+           "Hauteur(m)", "Diametre(cm)", "Volume(m3)", "Sante(/10)");
+}
+
+
+
 // Fonction pour afficher les arbres déjà chargés en RAM
 void afficher_RAM(struct Arbre arbres[], int nb_arbres) {
-    for (int i = 0; i < nb_arbres; i++) {    // boucle sur tous les arbres
-        printf("| %-12s | %-12s | %3d | %6.2f | %6.2f | %6.2f | %2d |\n",
+    for (int i = 1; i < nb_arbres; i++) {    // boucle sur tous les arbres
+        printf("| %-12s | %-12s | %3d | %-10.2f | %-12.2f | %-11.2f | %-10d |\n",       //format d'afichate %x et la position l'écartement entre deux token que on print, 
+        //et .2 signifi que on print 2 caractère après la virgule
                arbres[i].Identifiant,          // afficher l'identifiant
                arbres[i].Espece,               // afficher l'espèce
                arbres[i].Age,                  // afficher l'âge
@@ -74,16 +86,17 @@ void afficher_RAM(struct Arbre arbres[], int nb_arbres) {
 }
 
 
-void rechercher_RAM(struct Arbre arbres[], int nb_arbres) {
-    char arbre_cherche[20];
-    printf("Choisir la catégorie d'arbre que vous voulez rechercher : ");
-    scanf("%19s", arbre_cherche);
+void rechercher_RAM(struct Arbre arbres[], int nb_arbres) {     // Fonction pour rechercher un arbre dans la RAM selon l'espèce
+    char arbre_cherche[20];  // variable pour stocker l'espèce recherchée
+    printf("Choisir la categorie d'arbre que vous voulez rechercher : ");
+    scanf("%19s", arbre_cherche);  // lit une chaîne (max 19 caractères) entrée par l'utilisateur
 
-    int trouve = 0; // pour savoir si on a trouvé au moins un arbre
+    int trouve = 0; // flag pour savoir si au moins un arbre a été trouvé
 
-    for (int i = 0; i < nb_arbres; i++) {
-        if (strcmp(arbres[i].Espece, arbre_cherche) == 0) {
-            printf("| %-12s | %-12s | %3d | %6.2f | %6.2f | %6.2f | %2d |\n",
+    
+    for (int i = 1; i < nb_arbres; i++) {           // boucle sur tous les arbres en mémoire
+        if (strcmp(arbres[i].Espece, arbre_cherche) == 0) {      // comparer l'espèce de l'arbre courant avec celle recherchée
+            printf("| %-12s | %-12s | %3d | %-10.2f | %-12.2f | %-11.2f | %-10d |\n",            
                    arbres[i].Identifiant,
                    arbres[i].Espece,
                    arbres[i].Age,
@@ -91,22 +104,73 @@ void rechercher_RAM(struct Arbre arbres[], int nb_arbres) {
                    arbres[i].Diametre,
                    arbres[i].Volume,
                    arbres[i].Sante);
-            trouve = 1;
+            trouve = 1; // on marque que l'on a trouvé au moins un arbre
         }
     }
 
-    if (!trouve) {
-        printf("Aucun arbre de l'espèce '%s' trouvé.\n", arbre_cherche);
+    
+    if (!trouve) {          // si aucun arbre n'a été trouvé, afficher un message
+        printf("Aucun arbre de l'espèce '%s' trouve.\n", arbre_cherche);
     }
 
+    // ligne séparatrice pour l'affichage
     printf("-------------------------------------------------------------------------------\n");
 }
 
+void tri_bulle_age(struct Arbre arbres[], int nb_arbres) {      // Tri à bulle par âge (méthode 1)
 
-int main() {
-    struct Arbre arbres[61];
-    int nb_arbres = ram(arbres);
+    for (int i = 1; i < nb_arbres - 1; i++) {    // boucle principale : chaque passage met l'arbre le plus âgé à la fin
+
+        for (int j = 1; j < nb_arbres - i - 1; j++) {
+            if (arbres[j].Age > arbres[j+1].Age) {            // comparer l'âge de l'arbre j et j+1
+                struct Arbre temp = arbres[j];                // échanger les deux arbres si l'ordre n'est pas correct
+                arbres[j] = arbres[j+1];
+                arbres[j+1] = temp;
+            }
+        }
+    }
+}
+
+void tri_selection_sante(struct Arbre arbres[], int nb_arbres) {        // Tri par sélection par santé (méthode 2)
+    for (int i = 1; i < nb_arbres - 1; i++) {    // pour chaque position i, on cherche le minimum dans le reste du tableau
+        int min_idx = i; // indice du minimum trouvé
+        for (int j = i + 1; j < nb_arbres; j++) {
+            if (arbres[j].Sante < arbres[min_idx].Sante) {
+                min_idx = j; // mise à jour du minimum
+            }
+        }
+        struct Arbre temp = arbres[i];        // échanger l'arbre à i avec le minimum trouvé
+        arbres[i] = arbres[min_idx];
+        arbres[min_idx] = temp;
+    }
+}
+
+int main() {        // Fonction principale
+
+    struct Arbre arbres[61];            // tableau pour stocker les arbres
+    int nb_arbres = ram(arbres);        // charger les arbres depuis le CSV
+
+    // affichage initial des données
+    printf("=== Donne=ees initiales ===\n");
+    afficher_entete();
     afficher_RAM(arbres, nb_arbres);
-    rechercher_RAM(arbres, nb_arbres);
-    return 0;
+
+    // tri par âge et affichage
+    printf("\n=== Tri par âge (Bubble Sort) ===\n");
+    afficher_entete();
+    tri_bulle_age(arbres, nb_arbres);
+    afficher_RAM(arbres, nb_arbres);
+
+    // tri par santé et affichage
+    printf("\n=== Tri par sante (Selection Sort) ===\n");
+    afficher_entete();
+    tri_selection_sante(arbres, nb_arbres);
+    afficher_RAM(arbres, nb_arbres);
+
+    // affichage de notre recherche
+    printf("\n=== recherche d'espece ===\n");
+    afficher_entete();
+    rechercher_RAM(arbres, nb_arbres); //
+
+    return 0; // fin 
 }
