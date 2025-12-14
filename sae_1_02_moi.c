@@ -92,7 +92,7 @@ void rechercher_RAM(struct Arbre arbres[], int nb_arbres) {     // Fonction pour
     scanf("%19s", arbre_cherche);  // lit une chaîne (max 19 caractères) entrée par l'utilisateur
 
     int trouve = 0; // flag pour savoir si au moins un arbre a été trouvé
-
+    afficher_entete();
     
     for (int i = 1; i < nb_arbres; i++) {           // boucle sur tous les arbres en mémoire
         if (strcmp(arbres[i].Espece, arbre_cherche) == 0) {      // comparer l'espèce de l'arbre courant avec celle recherchée
@@ -161,8 +161,8 @@ int menu() {
 
 int main() {
 
-    struct Arbre arbres[61];
-    int nb_arbres = ram(arbres);
+    struct Arbre arbres[61];            // tableau pour stocker les arbres
+    int nb_arbres = ram(arbres);        // charger les arbres depuis le CSV
 
     // affichage initial des données
     printf("=== Donne=ees initiales ===\n");
@@ -178,12 +178,13 @@ int main() {
         switch (choix) {
 
         case 1:
+        // affichage de notre recherche
             printf("\n=== Recherche d'espece ===\n");
-            afficher_entete();
             rechercher_RAM(arbres, nb_arbres);
             break;
 
         case 2:
+        // tri par âge et affichage
             printf("\n=== Tri par age (Bubble Sort) ===\n");
             tri_bulle_age(arbres, nb_arbres);
             afficher_entete();
@@ -191,6 +192,7 @@ int main() {
             break;
 
         case 3:
+        // tri par santé et affichage
             printf("\n=== Tri par sante (Selection Sort) ===\n");
             tri_selection_sante(arbres, nb_arbres);
             afficher_entete();
