@@ -42,8 +42,8 @@ int ram(struct Arbre arbres[]) {
             for (char *p = token; *p; p++) if (*p == ',') *p = '.'; // remplacer ',' par '.' pour qu'il détect les valeur float
             if (colonne == 0) strcpy(a.Identifiant, token); // colonne 0 Identifiant
             else if (colonne == 1) strcpy(a.Espece, token); // colonne 1 Espece
-            else if (colonne == 2) a.Age = atoi(token);     // colonne 2 Age (conversion string → int)
-            else if (colonne == 3) a.Hauteur = atof(token); // colonne 3 Hauteur (string → float)
+            else if (colonne == 2) a.Age = atoi(token);     // colonne 2 Age (conversion string  int)
+            else if (colonne == 3) a.Hauteur = atof(token); // colonne 3 Hauteur (string  float)
             else if (colonne == 4) a.Diametre = atof(token); // colonne 4 Diametre
             else if (colonne == 5) a.Volume = atof(token);   // colonne 5 Volume
             else if (colonne == 6) a.Sante = atoi(token);    // colonne 6 Sante
@@ -145,32 +145,68 @@ void tri_selection_sante(struct Arbre arbres[], int nb_arbres) {        // Tri p
     }
 }
 
-int main() {        // Fonction principale
+int menu() {
+    int choix;                                  //fonction qui nous permet de faire le choix de ce que l'on veut exécuté
+    printf("\n========= MENU =========\n");
+    printf("1 - Rechercher par espece\n");
+    printf("2 - Trier par age\n");
+    printf("3 - Trier par sante\n");
+    printf("0 - Quitter\n");
+    printf("========================\n");
+    printf("Votre choix : ");
+    scanf("%d", &choix);
+    return choix;
+}
 
-    struct Arbre arbres[61];            // tableau pour stocker les arbres
-    int nb_arbres = ram(arbres);        // charger les arbres depuis le CSV
+
+int main() {
+
+    struct Arbre arbres[61];
+    int nb_arbres = ram(arbres);
 
     // affichage initial des données
     printf("=== Donne=ees initiales ===\n");
     afficher_entete();
     afficher_RAM(arbres, nb_arbres);
 
-    // tri par âge et affichage
-    printf("\n=== Tri par âge (Bubble Sort) ===\n");
-    afficher_entete();
-    tri_bulle_age(arbres, nb_arbres);
-    afficher_RAM(arbres, nb_arbres);
+    int choix;
 
-    // tri par santé et affichage
-    printf("\n=== Tri par sante (Selection Sort) ===\n");
-    afficher_entete();
-    tri_selection_sante(arbres, nb_arbres);
-    afficher_RAM(arbres, nb_arbres);
 
-    // affichage de notre recherche
-    printf("\n=== recherche d'espece ===\n");
-    afficher_entete();
-    rechercher_RAM(arbres, nb_arbres); //
+    do {
+        choix = menu();
 
-    return 0; // fin 
+        switch (choix) {
+
+        case 1:
+            printf("\n=== Recherche d'espece ===\n");
+            afficher_entete();
+            rechercher_RAM(arbres, nb_arbres);
+            break;
+
+        case 2:
+            printf("\n=== Tri par age (Bubble Sort) ===\n");
+            tri_bulle_age(arbres, nb_arbres);
+            afficher_entete();
+            afficher_RAM(arbres, nb_arbres);
+            break;
+
+        case 3:
+            printf("\n=== Tri par sante (Selection Sort) ===\n");
+            tri_selection_sante(arbres, nb_arbres);
+            afficher_entete();
+            afficher_RAM(arbres, nb_arbres);
+            break;
+
+        case 0:
+            printf("Fin du programme.\n");
+            break;
+
+        default:
+            printf("Choix invalide.\n");
+        }
+
+    } while (choix != 0);
+
+    return 0;
 }
+
