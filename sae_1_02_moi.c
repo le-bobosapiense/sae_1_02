@@ -25,7 +25,7 @@ int ram(struct Arbre arbres[]) {                    //struct Arbre: c'est le typ
     char line[256];         // capacité de lecture de caractère par ligne ici 256
     int nb_arbres = 0;      // compteur du nombre d'arbres chargés
     
-    while (fgets(line, sizeof(line), f)) {      // Boucle pour lire le fichier ligne par ligne
+    while (fgets(line, sizeof(line), f)) {      // Boucle pour lire le fichier ligne par ligne, fgets lit une ligne du fichier csv, sizeof retourne la taille en mémoire
         line[strcspn(line, "\n")] = '\0';  // retirer le caractère '\n' à la fin de la ligne
 
         if (nb_arbres == 0) {   // première ligne = en-têtes
@@ -61,7 +61,7 @@ int ram(struct Arbre arbres[]) {                    //struct Arbre: c'est le typ
 }
 
 void afficher_entete() {
-    printf("| %-12s | %-12s | %-3s | %-10s | %-12s | %-11s | %-10s |\n",
+    printf("| %-12s | %-12s | %-3s | %-10s | %-12s | %-11s | %-10s |\n",   // les nombre son les espace de caractère dédier pour l'espace entre les valeur dans le tableau
            "Identifiant", "Espece", "Age",
            "Hauteur(m)", "Diametre(cm)", "Volume(m3)", "Sante(/10)");
 }
@@ -211,6 +211,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
