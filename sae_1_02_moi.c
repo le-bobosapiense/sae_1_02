@@ -15,7 +15,7 @@ struct Arbre {
 
 // Fonction pour charger les données du CSV en mémoire
 // Elle prend en paramètre un tableau de struct Arbre et retourne le nombre d'arbres lus
-int ram(struct Arbre arbres[]) {
+int ram(struct Arbre arbres[]) {                    //struct Arbre: c'est le type et arbres c'est le tableau qui enregistre chaque ligne 
     FILE *f = fopen("foret_arbres_50_V1.csv", "r"); // ouvrir le fichier CSV en lecture
     if (!f) {                                      // vérifier si l'ouverture a échoué
         perror("Erreur ouverture fichier");        // afficher le message d'erreur
@@ -211,4 +211,5 @@ int main() {
 
     return 0;
 }
+
 
