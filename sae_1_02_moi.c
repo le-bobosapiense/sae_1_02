@@ -40,10 +40,10 @@ int ram(struct Arbre arbres[]) {                    //struct Arbre: c'est le typ
         while (token != NULL) {
             // Selon la colonne, remplir le bon champ de la structure
             for (char *p = token; *p; p++) if (*p == ',') *p = '.'; // remplacer ',' par '.' pour qu'il détect les valeur float
-            if (colonne == 0) strcpy(a.Identifiant, token); // colonne 0 Identifiant
-            else if (colonne == 1) strcpy(a.Espece, token); // colonne 1 Espece
-            else if (colonne == 2) a.Age = atoi(token);     // colonne 2 Age (conversion string  int)
-            else if (colonne == 3) a.Hauteur = atof(token); // colonne 3 Hauteur (string  float)
+            if (colonne == 0) strcpy(a.Identifiant, token); // colonne 0 Identifiant, strcpy permet de copier notre chaine de caractère dans a.identifiant
+            else if (colonne == 1) strcpy(a.Espece, token); // colonne 1 Espece 
+            else if (colonne == 2) a.Age = atoi(token);     // colonne 2 Age (conversion string  int), atoi convertie caine de caractère en entier
+            else if (colonne == 3) a.Hauteur = atof(token); // colonne 3 Hauteur (string  float), atof convertie une chaine de caractère en flotant
             else if (colonne == 4) a.Diametre = atof(token); // colonne 4 Diametre
             else if (colonne == 5) a.Volume = atof(token);   // colonne 5 Volume
             else if (colonne == 6) a.Sante = atoi(token);    // colonne 6 Sante
@@ -211,5 +211,6 @@ int main() {
 
     return 0;
 }
+
 
 
